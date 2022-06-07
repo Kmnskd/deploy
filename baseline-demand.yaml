@@ -1,37 +1,37 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: baseline-auth
+  name: baseline-demand
   namespace: zone-current-env
   labels:
-    app: baseline-auth
+    app: baseline-demand
 spec:
   type: NodePort
   ports:
-    - name: tcp-20121
+    - name: tcp-20211
       protocol: TCP
-      port: 20121 # 集群端口
-      targetPort: 20121 # pod内容器端口
+      port: 20211 # 集群端口
+      targetPort: 20211 # pod内容器端口
   selector:
-    app: baseline-auth
+    app: baseline-demand
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: baseline-auth
+  name: baseline-demand
   namespace: zone-current-env
   labels:
-    app: baseline-auth
+    app: baseline-demand
     version: v1
 spec:
-  replicas: replicas-num
+  replicas: 1
   selector:
     matchLabels:
-      app: baseline-auth
+      app: baseline-demand
   template:
     metadata:
       labels:
-        app: baseline-auth
+        app: baseline-demand
     spec:
       volumes:
         - name: host-time
@@ -39,11 +39,11 @@ spec:
             path: /etc/localtime
             type: ''
       containers:
-        - name: baseline-auth
-          image: 10.163.205.239:8081/baseline-current-env/baseline-authtag-name
+        - name: baseline-demand
+          image: 10.163.205.239:8081/baseline-current-env/baseline-demandtag-name
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 20121
+            - containerPort: 20211
           volumeMounts:
             - name: host-time
               mountPath: /etc/localtime

@@ -1,12 +1,12 @@
-TAG_NAME = {"1": "test", "2": "dev", "3": "feature"}
-  
+TAG_NAME = {"1": "test", "2": "dev", "3": "feature", "4": "bloom"}
+
 HARBOR_IP = "10.163.205.239:8081"
 
 NACOS_NAMESPACE = {"test": "796c847f-d808-4b1e-b79f-f6943c730604",
                    "dev": "41854487-a3f5-452b-935d-e30d86727dd0",
                    "prd": "dbaefc05-3c4d-4f8f-ad58-136b56ac0708",
-                   "feature": "cb2b206a-e46b-4d87-8ede-ca5edbd4fb34"}
-
+                   "feature": "cb2b206a-e46b-4d87-8ede-ca5edbd4fb34",
+                   "bloom": "a098619f-dbc2-4bcc-af3f-0c4d4ce41c15"}
 
 SERVICE_INFO = {"baseline-auth": {"service_port": 20121, "node_port": {"dev": "30920", "test": "30921", "prd": "30922", "feature": "32700"}},
                 "baseline-project": {"service_port": 20111, "node_port": {"dev": "30923", "test": "30924", "prd": "30925", "feature": "32701"}},

@@ -12,6 +12,23 @@ spec:
       protocol: TCP
       port: 17001 #  集群端口
       targetPort: 17001 # pod内容器端口
+  selector:
+    app: baseline-devp-api-gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: baseline-devp-api-gateway
+  namespace: zone-current-env
+  labels:
+    app: baseline-devp-api-gateway
+spec:
+  type: NodePort
+  ports:
+    - name: tcp-17001
+      protocol: TCP
+      port: 17001 #  集群端口
+      targetPort: 17001 # pod内容器端口
       nodePort: node-port
   selector:
     app: baseline-devp-api-gateway

@@ -220,9 +220,9 @@ class AutomationDeploy(object):
         # 制作镜像
         self.build_image(service_name, tag)
         # 部署镜像
-        #self.deploy_image(tag)
+        self.deploy_image(tag)
         # 生产数据库备份
-        #self.backup_mysql(tag)
+        # self.backup_mysql(tag)
         # 删除镜像
         # self.delete_images()
 

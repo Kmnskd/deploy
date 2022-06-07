@@ -1,3 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: baseline-build
+  namespace: zone-current-env
+  labels:
+    app: baseline-build
+spec:
+  type: NodePort
+  ports:
+    - name: tcp-20161
+      protocol: TCP
+      port: 20161 # 集群端口
+      targetPort: 20161 # pod内容器端口
+  selector:
+    app: baseline-build
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:

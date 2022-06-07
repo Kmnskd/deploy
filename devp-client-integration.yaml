@@ -1,3 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: baseline-devp-client-integration
+  namespace: zone-current-env
+  labels:
+    app: baseline-devp-client-integration
+spec:
+  type: NodePort
+  ports:
+    - name: tcp-15001
+      protocol: TCP
+      port: 15001 # 集群端口
+      targetPort: 15001 # pod内容器端口
+  selector:
+    app: baseline-devp-client-integration
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
