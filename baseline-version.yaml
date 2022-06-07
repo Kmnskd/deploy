@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-version
+  namespace: zone-current-env
+  labels:
+    app: baseline-version
+    version: v1
+spec:
+  replicas: replicas-num
+  selector:
+    matchLabels:
+      app: baseline-version
+  template:
+    metadata:
+      labels:
+        app: baseline-version
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers: # docker容器的配置
+        - name: baseline-version
+          image: 10.163.205.239:8081/baseline-current-env/baseline-versiontag-name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 20132 # 容器对外开放端口
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime

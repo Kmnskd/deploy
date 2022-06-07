@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-devp-client-integration
+  namespace: zone-current-env
+  labels:
+    app: baseline-devp-client-integration
+    version: v1
+spec:
+  replicas: replicas-num
+  selector:
+    matchLabels:
+      app: baseline-devp-client-integration
+  template:
+    metadata:
+      labels:
+        app: baseline-devp-client-integration
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      hostAliases:
+        - ip: 10.9.11.254
+          hostnames:
+            - jira.d.shunguang.com
+        - ip: 10.138.40.146
+          hostnames:
+            - adppm.haier.net
+        - ip: 47.93.125.250
+          hostnames:
+            - zj.haier.net
+      containers: # docker容器的配置
+        - name: baseline-devp-client-integration
+          image: 10.163.205.239:8081/baseline-current-env/devp-client-integrationtag-name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 15001 # 容器对外开放端口
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime

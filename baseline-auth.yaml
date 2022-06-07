@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-auth
+  namespace: zone-current-env
+  labels:
+    app: baseline-auth
+    version: v1
+spec:
+  replicas: replicas-num
+  selector:
+    matchLabels:
+      app: baseline-auth
+  template:
+    metadata:
+      labels:
+        app: baseline-auth
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - name: baseline-auth
+          image: 10.163.205.239:8081/baseline-current-env/baseline-authtag-name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 20121
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime

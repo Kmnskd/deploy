@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-board
+  namespace: zone-current-env
+  labels:
+    app: baseline-board
+    version: v1
+spec:
+  replicas: replicas-num
+  selector:
+    matchLabels:
+      app: baseline-board
+  template:
+    metadata:
+      labels:
+        app: baseline-board
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+        - name: board-pvc
+          persistentVolumeClaim:
+            claimName: baseline-board
+      containers:
+        - name: baseline-board
+          image: 10.163.205.239:8081/baseline-current-env/baseline-boardtag-name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 20151
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime
+            - name: board-pvc
+              mountPath: /home/baseline/board/attendance
+            - name: board-pvc
+              mountPath: /home/baseline/board/requirement

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-build
+  namespace: zone-current-env
+  labels:
+    app: baseline-build
+    version: v1
+spec:
+  replicas: replicas-num
+  selector:
+    matchLabels:
+      app: baseline-build
+  template:
+    metadata:
+      labels:
+        app: baseline-build
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - name: baseline-build
+          image: 10.163.205.239:8081/baseline-current-env/baseline-buildtag-name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 20161
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime

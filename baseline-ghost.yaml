@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-ghost
+  namespace: zone-current-env
+  labels:
+    app: baseline-ghost
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baseline-ghost
+  template:
+    metadata:
+      labels:
+        app: baseline-ghost
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - name: baseline-ghost
+          image: 10.163.205.239:8081/baseline-current-env/baseline-ghosttag-name
+          env:
+            ######### 阿里sls日志 ###########
+            - name: aliyun_logs_baseline-ghost-current-env
+              value: stdout
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 20181
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime
+

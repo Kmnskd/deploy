@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseline-devp-user-center
+  namespace: zone-current-env
+  labels:
+    app: baseline-devp-user-center
+    version: v1
+spec:
+  replicas: replicas-num
+  selector:
+    matchLabels:
+      app: baseline-devp-user-center
+  template:
+    metadata:
+      labels:
+        app: baseline-devp-user-center
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers: # docker容器的配置
+        - name: baseline-devp-user-center
+          image: 10.163.205.239:8081/baseline-current-env/devp-user-centertag-name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 16001 # 容器对外开放端口
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime
