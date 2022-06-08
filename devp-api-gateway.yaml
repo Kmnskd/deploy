@@ -12,7 +12,6 @@ spec:
       protocol: TCP
       port: 17001 #  集群端口
       targetPort: 17001 # pod内容器端口
-      nodePort: node-port
   selector:
     app: baseline-devp-api-gateway
 ---
