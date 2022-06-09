@@ -1,4 +1,6 @@
-TAG_NAME = {"1": "test", "2": "dev", "3": "feature", "4": "bloom", "5": "hope", "6": "grace"}
+TAG_NAME = {"1": "test", "2": "dev", "3": "feature", "4": "bloom", "5": "hope", "6": "grace", "7": "ack_feature"}
+
+ACK = ("hope", "grace", "ack_feature")
 
 HARBOR_IP = "10.163.205.239:8081"
 

@@ -4,6 +4,7 @@ from settings import SERVICE_INFO
 from settings import NACOS_NAMESPACE
 from settings import TAG_NAME
 from settings import HARBOR_IP
+from settings import ACK
 
 import subprocess
 import os
@@ -26,6 +27,7 @@ class AutomationDeploy(object):
         self.nacos_namespace = NACOS_NAMESPACE
         self.current_env = None
         self.harbor_ip = HARBOR_IP
+        self.ack = ACK
 
     def modify_dockerfile(self, jar_name, namespace):
         """ 根据部署环境修改dockerfile的参数 """
@@ -83,6 +85,7 @@ class AutomationDeploy(object):
         self.run_cmd(delete_image)
 
     def deploy_image(self, tag):
+        self.update_kube_config("start")
         temp = tag
         # 由于生产环境可能出现同一个tag打多次的情况，拉取镜像如果tag相同默认不更新，所以生产环境需要以哈希值拉镜像，不能以tag为准
         for name in self.service_info:
@@ -96,8 +99,11 @@ class AutomationDeploy(object):
             else:
                 tag = ":" + temp
             self.create_k8s_yaml(tag, name, node_port, yaml_name)
+        self.update_kube_config("finish")
 
     def update_kube_config(self, condition):
+        if not self.ack_bool:
+            return
         cmd = ""
         if condition == "start":
             if self.current_env == "prd":
@@ -157,6 +163,7 @@ class AutomationDeploy(object):
             return
         tag_num = tag_list[-2]
         self.current_env = self.tag_name.get(tag_num, "")
+        self.ack_judge(self.current_env)
         if not self.current_env:
             print("tag name is error.tag: %s" % tag)
             raise BaselineError("tag name is error.")
@@ -207,6 +214,13 @@ class AutomationDeploy(object):
         if self.current_env == "prd":
             cmd = "ssh jenkins@10.163.205.239 /bin/bash /data/zone_mysql/backup.sh %s" % tag
             self.run_cmd(cmd)
+
+    def ack_judge(self, num_label):
+        if num_label in self.ack:
+            self.ack_bool = True
+            # 由于feature空间kusphere和ack都存在，所以需要特殊处理，nacos的空间id是相同的
+            if self.current_env == "ack_feature":
+                self.current_env = "feature"
 
     def auto_build(self, tag):
         # copy jar包
