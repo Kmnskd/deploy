@@ -232,7 +232,7 @@ class AutomationDeploy(object):
         # 登录harbor
         self.login_harbor()
         # 制作镜像
-        self.build_image(service_name, tag)
+        # self.build_image(service_name, tag)
         # 部署镜像
         self.deploy_image(tag)
         # 生产数据库备份
