@@ -1,4 +1,6 @@
-TAG_NAME = {"1": "test", "2": "dev", "3": "feature", "4": "bloom", "5": "hope", "6": "grace", "7": "ack_feature"}
+TAG_NAME = {"1": "test", "2": "dev", "3": "feature", "4": "bloom",
+            "5": "hope", "6": "grace", "7": "ack_feature", "8": "peace",
+            "9": "pearl", "10": "passion", "11": "eureka"}
 
 ACK = ("hope", "grace", "ack_feature")
 
@@ -10,7 +12,9 @@ NACOS_NAMESPACE = {"test": "796c847f-d808-4b1e-b79f-f6943c730604",
                    "feature": "cb2b206a-e46b-4d87-8ede-ca5edbd4fb34",
                    "bloom": "a098619f-dbc2-4bcc-af3f-0c4d4ce41c15",
                    "hope": "1fdb5cdb-a93c-4ea2-b1e9-24ebdc12d459",
-                   "grace": "b413d0cc-6b62-4b70-85e3-0a252a692aee"}
+                   "grace": "b413d0cc-6b62-4b70-85e3-0a252a692aee",
+                   "peace": "f7da4f72-58f0-48e1-9a58-fbf7a67e41d7",
+                   "pearl": "b413d0cc-6b62-4b70-85e3-0a252a692aee"}
 
 SERVICE_INFO = {"baseline-auth": {"service_port": 20121, "node_port": {"dev": "30920", "test": "30921", "prd": "30922", "feature": "32700"}},
                 "baseline-project": {"service_port": 20111, "node_port": {"dev": "30923", "test": "30924", "prd": "30925", "feature": "32701"}},
