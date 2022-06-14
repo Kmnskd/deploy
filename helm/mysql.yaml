@@ -1,0 +1,99 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: baseline-mysql
+  namespace: zone-eureka
+  labels:
+    app: baseline-mysql
+spec:
+  ports:
+    - name: tcp-3306
+      protocol: TCP
+      port: 3306
+      targetPort: 3306
+  selector:
+    app: baseline-mysql
+    version: v1
+  type: NodePort
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: baseline-mysql
+  namespace: zone-eureka
+  labels:
+    app: baseline-mysql
+    version: v1
+  annotations:
+    kubesphere.io/creator: admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baseline-mysql
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: baseline-mysql
+        version: v1
+    spec:
+      containers:
+        - name: container-pp0p9i
+          image: 'nacos/nacos-mysql:5.7'
+          ports:
+            - name: tcp-3306
+              containerPort: 3306
+              protocol: TCP
+            - name: tcp-33060
+              containerPort: 33060
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_DATABASE
+              value: nacos_devtest
+            - name: MYSQL_USER
+              value: nacos
+            - name: MYSQL_PASSWORD
+              value: nacos
+          resources: {}
+          volumeMounts:
+            - name: volume-v1fzyu
+              mountPath: /var/lib/mysql
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      serviceAccountName: default
+      serviceAccount: default
+      securityContext: {}
+      affinity: {}
+      schedulerName: default-scheduler
+  serviceName: baseline-mysql
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        labels:
+          app: baseline-mysql
+          version: v1
+        name: volume-v1fzyu
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+        storageClassName: alicloud-nas-subpath
+      status:
+        phase: Pending

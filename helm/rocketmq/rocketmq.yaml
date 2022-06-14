@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: baseline-rocketmq
+  namespace: zone-eureka
+  labels:
+    app: baseline-rocketmq
+spec:
+  ports:
+    - name: tcp-9876
+      protocol: TCP
+      port: 9876
+      targetPort: 9876
+  selector:
+    app: name_service
+    name_service_cr: name-service
+  type: ClusterIP

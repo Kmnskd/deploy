@@ -1,0 +1,129 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nacos-cm
+  namespace: zone-eureka
+data:
+  mysql.db.name: nacos_devtest
+  mysql.password: nacos
+  mysql.port: '3306'
+  mysql.user: nacos
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: baseline-nacos
+  namespace: zone-eureka
+  labels:
+    app: baseline-nacos
+spec:
+  ports:
+    - name: tcp-8848
+      protocol: TCP
+      port: 8848
+      targetPort: 8848
+  selector:
+    app: baseline-nancos
+    version: v1
+  type: NodePort
+
+---
+
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: baseline-nancos
+  namespace: zone-eureka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baseline-nancos
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: baseline-nancos
+        version: v1
+    spec:
+      containers:
+        - name: nacos
+          image: 'nacos/nacos-server:1.4.1'
+          ports:
+            - name: http
+              containerPort: 8848
+              protocol: TCP
+            - name: rpc
+              containerPort: 7848
+              protocol: TCP
+          env:
+            - name: PREFER_HOST_MODE
+              value: hostname
+            - name: MODE
+              value: standalone
+            - name: MYSQL_SERVICE_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: nacos-cm
+                  key: mysql.db.name
+            - name: MYSQL_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nacos-cm
+                  key: mysql.port
+            - name: MYSQL_SERVICE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: nacos-cm
+                  key: mysql.user
+            - name: MYSQL_SERVICE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: nacos-cm
+                  key: mysql.password
+            - name: NACOS_SERVER_PORT
+              value: '8848'
+            - name: NACOS_APPLICATION_PORT
+              value: '8848'
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+          volumeMounts:
+            - name: datadir
+              mountPath: /home/nacos/data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  serviceName: nacos-cs
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        labels:
+          app: baseline-nacos
+          version: v1
+        name: datadir
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+        storageClassName: alicloud-nas-subpath
+      status:
+        phase: Pending

@@ -1,0 +1,166 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: baseline-redis
+  namespace: zone-eureka
+data:
+  default.conf: |-
+    bind 0.0.0.0
+    port 6379
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    pidfile ""
+    loglevel notice
+    logfile ""
+    databases 16
+    always-show-logo yes
+    save ""
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir /data/redis
+    maxclients 10000
+    # maxmemory
+    maxmemory-policy noeviction
+    maxmemory-samples 5
+    appendonly yes
+    appendfilename appendonly.aof
+    appendfsync everysec
+    no-appendfsync-on-rewrite no
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    aof-load-truncated yes
+    aof-use-rdb-preamble yes
+    lua-time-limit 5000
+    slowlog-log-slower-than 10000
+    slowlog-max-len 128
+    notify-keyspace-events ""
+    hash-max-ziplist-entries 512
+    hash-max-ziplist-value 64
+    list-max-ziplist-size -2
+    list-compress-depth 0
+    set-max-intset-entries 512
+    zset-max-ziplist-entries 128
+    zset-max-ziplist-value 64
+    hll-sparse-max-bytes 3000
+    stream-node-max-bytes 4096
+    stream-node-max-entries 100
+    activerehashing yes
+    client-output-buffer-limit normal 0 0 0
+    client-output-buffer-limit replica 256mb 64mb 60
+    client-output-buffer-limit pubsub 32mb 8mb 60
+    client-query-buffer-limit 1gb
+    proto-max-bulk-len 512mb
+    hz 10
+    dynamic-hz yes
+    aof-rewrite-incremental-fsync yes
+    rdb-save-incremental-fsync yes
+    # lfu-log-factor 10
+    # lfu-decay-time 1
+  user.conf: |-
+    # redis.conf
+    appendonly yes
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: baseline-redis
+  namespace: zone-eureka
+  labels:
+    app: baseline-redis
+spec:
+  ports:
+    - name: tcp-6379
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+  selector:
+    app.kubernetes.io/instance: baseline-redis
+    app.kubernetes.io/name: redis
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: baseline-redis
+  namespace: zone-eureka
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: baseline-redis
+      app.kubernetes.io/name: redis
+  serviceName: baseline-redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: baseline-redis
+        app.kubernetes.io/name: redis
+    spec:
+      containers:
+        - command:
+            - /bin/sh
+            - '-c'
+            - |
+              rm -rf /redis/data/lost+found
+              args="
+              --include /tmp/conf/default.conf
+              --include /tmp/conf/user.conf
+
+              --requirepass redis
+              "
+              redis-server $args
+          image: 'redis:6.0.9-alpine'
+          imagePullPolicy: IfNotPresent
+          name: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /tmp/conf
+              name: configs
+            - mountPath: /data/redis
+              name: data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: baseline-redis
+          name: configs
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        labels:
+          app.kubernetes.io/instance: baseline-redis
+          app.kubernetes.io/name: redis
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+        storageClassName: alicloud-nas-subpath
+      status:
+        phase: Pending

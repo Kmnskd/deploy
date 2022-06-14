@@ -1,0 +1,115 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mockserver
+  namespace: zone-eureka
+  labels:
+    app: mockserver
+    app.kubernetes.io/managed-by: Helm
+    chart: mockserver-5.13.2
+    heritage: Helm
+    release: mockserver
+spec:
+  ports:
+    - name: serviceport
+      protocol: TCP
+      port: 1080
+      targetPort: serviceport
+  selector:
+    app: mockserver
+    release: mockserver
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mockserver
+  namespace: zone-eureka
+  labels:
+    app: mockserver
+    app.kubernetes.io/managed-by: Helm
+    chart: mockserver-5.13.2
+    heritage: Helm
+    release: mockserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mockserver
+      release: mockserver
+  template:
+    metadata:
+      name: mockserver
+      creationTimestamp: null
+      labels:
+        app: mockserver
+        release: mockserver
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: mockserver-config
+            defaultMode: 420
+            optional: true
+        - name: libs-volume
+          configMap:
+            name: mockserver-config
+            defaultMode: 420
+            optional: true
+      containers:
+        - name: mockserver
+          image: 'mockserver/mockserver:mockserver-5.13.2'
+          ports:
+            - name: serviceport
+              containerPort: 1080
+              protocol: TCP
+          env:
+            - name: MOCKSERVER_LOG_LEVEL
+              value: INFO
+            - name: SERVER_PORT
+              value: '1080'
+          resources: {}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+            - name: libs-volume
+              mountPath: /libs
+          livenessProbe:
+            tcpSocket:
+              port: serviceport
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          readinessProbe:
+            tcpSocket:
+              port: serviceport
+            initialDelaySeconds: 2
+            timeoutSeconds: 1
+            periodSeconds: 2
+            successThreshold: 1
+            failureThreshold: 10
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 65534
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      serviceAccountName: default
+      serviceAccount: default
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
