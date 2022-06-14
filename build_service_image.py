@@ -28,6 +28,7 @@ class AutomationDeploy(object):
         self.current_env = None
         self.harbor_ip = HARBOR_IP
         self.ack = ACK
+        self.ack_bool = False
 
     def modify_dockerfile(self, jar_name, namespace):
         """ 根据部署环境修改dockerfile的参数 """
