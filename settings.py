@@ -14,7 +14,7 @@ NACOS_NAMESPACE = {"test": "796c847f-d808-4b1e-b79f-f6943c730604",
                    "hope": "1fdb5cdb-a93c-4ea2-b1e9-24ebdc12d459",
                    "grace": "b413d0cc-6b62-4b70-85e3-0a252a692aee",
                    "peace": "f7da4f72-58f0-48e1-9a58-fbf7a67e41d7",
-                   "pearl": "b413d0cc-6b62-4b70-85e3-0a252a692aee"}
+                   "pearl": "14501f0c-d97a-4813-9919-dc707abf7c8e"}
 
 SERVICE_INFO = {"baseline-auth": {"service_port": 20121, "node_port": {"dev": "30920", "test": "30921", "prd": "30922", "feature": "32700"}},
                 "baseline-project": {"service_port": 20111, "node_port": {"dev": "30923", "test": "30924", "prd": "30925", "feature": "32701"}},
