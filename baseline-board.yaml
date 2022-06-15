@@ -38,9 +38,9 @@ spec:
           hostPath:
             path: /etc/localtime
             type: ''
-        - name: board-pvc
-          persistentVolumeClaim:
-            claimName: baseline-board
+#        - name: board-pvc
+#          persistentVolumeClaim:
+#            claimName: baseline-board
       containers:
         - name: baseline-board
           image: 10.163.205.239:8081/baseline-current-env/baseline-boardtag-name
@@ -50,7 +50,7 @@ spec:
           volumeMounts:
             - name: host-time
               mountPath: /etc/localtime
-            - name: board-pvc
-              mountPath: /home/baseline/board/attendance
-            - name: board-pvc
-              mountPath: /home/baseline/board/requirement
+#            - name: board-pvc
+#              mountPath: /home/baseline/board/attendance
+#            - name: board-pvc
+#              mountPath: /home/baseline/board/requirement
