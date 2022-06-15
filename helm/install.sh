@@ -24,3 +24,5 @@ kubectl apply -f rokcetmq/rocketmq.yaml
 
 sed -i 's/${namespace}/zone-eureka/g' *.yaml
 sed -i 's/${namespace}/zone-eureka/g' rocketmq/*.yaml
+
+mysql -h 10.163.205.167 -P 31006 -uroot -proot -e "source init.sql"

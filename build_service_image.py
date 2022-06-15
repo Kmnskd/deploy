@@ -86,7 +86,7 @@ class AutomationDeploy(object):
         self.run_cmd(delete_image)
 
     def deploy_image(self, tag):
-        self.update_kube_config("start")
+        # self.update_kube_config("start")
         temp = tag
         # 由于生产环境可能出现同一个tag打多次的情况，拉取镜像如果tag相同默认不更新，所以生产环境需要以哈希值拉镜像，不能以tag为准
         for name in self.service_info:
@@ -100,7 +100,7 @@ class AutomationDeploy(object):
             else:
                 tag = ":" + temp
             self.create_k8s_yaml(tag, name, node_port, yaml_name)
-        self.update_kube_config("finish")
+        # self.update_kube_config("finish")
 
     def update_kube_config(self, condition):
         if not self.ack_bool:
