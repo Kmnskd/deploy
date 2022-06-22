@@ -1,4 +1,4 @@
-FROM cjkang/java1.8
+FROM apache/skywalking-java-agent:8.8.0-java8
 
 MAINTAINER likunkun@haier.com
 ENV LANG C.UTF-8
